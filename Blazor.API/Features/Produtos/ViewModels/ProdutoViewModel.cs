@@ -4,7 +4,7 @@ using Blazor.API.Features.Produtos.Queries.ListarProduto;
 using Blazor.API.Features.Produtos.Queries.ListarProdutos;
 using MediatR;
 
-namespace Blazor.API.Features.Produtos.viewModels;
+namespace Blazor.API.Features.Produtos.ViewModels;
 
 public class ProdutoViewModel
 {

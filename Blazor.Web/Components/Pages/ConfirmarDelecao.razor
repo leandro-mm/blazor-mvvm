@@ -1,0 +1,60 @@
+@* Componente de Modal para confirmar deleção *@
+
+<div class="modal fade @(IsVisible ? "show d-block" : "")"
+     style="@(IsVisible ? "display: block; background-color: rgba(0,0,0,0.5);" : "display: none;")" tabindex="-1"
+     role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">⚠️ Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" @onclick="Cancelar" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Tem certeza que deseja excluir este produto?</strong></p>
+                <p>Esta ação não pode ser desfeita.</p>
+
+                @if (!string.IsNullOrEmpty(ProdutoNome))
+                {
+                    <div class="alert alert-warning">
+                        <strong>Produto:</strong> @ProdutoNome
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Cancelar">
+                    ❌ Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" @onclick="Confirmar">
+                    🗑️ Sim, Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string? ProdutoNome { get; set; }
+
+    [Parameter]
+    public Guid ProdutoId { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private async Task Confirmar()
+    {
+        await OnConfirm.InvokeAsync();
+    }
+
+    private async Task Cancelar()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

@@ -1,0 +1,153 @@
+﻿@page "/"
+
+@rendermode InteractiveServer
+@inject ProdutoViewModel ViewModel
+@inject NavigationManager Navigation
+
+<PageTitle>Produtos</PageTitle>
+
+<h3>Lista de Produtos</h3>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick='() => Navigation.NavigateTo("/produtos/criar")'>
+        <i class="bi bi-plus-circle"></i> Novo Produto
+    </button>
+
+    <button class="btn btn-secondary ms-2" @onclick="Recarregar">
+        <i class="bi bi-arrow-clockwise"></i> Recarregar
+    </button>
+</div>
+
+@if (ViewModel.IsLoading)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+{
+    <div class="alert alert-danger">@ViewModel.ErrorMessage</div>
+}
+else if (ViewModel.Produtos?.Produtos?.Count == 0)
+{
+    <div class="alert alert-info">Nenhum produto cadastrado.</div>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Estoque</th>
+                <th>Categoria</th>
+                <th>Data Criação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var produto in ViewModel.Produtos?.Produtos ?? new List<ProdutoDto>())
+            {
+                <tr>
+                    <td>@produto.Nome</td>
+                    <td>@produto.Preco.ToString("C")</td>
+                    <td>@produto.QuantidadeEstoque</td>
+                    <td><span class="badge bg-info">@produto.Categoria</span></td>
+                    <td>@produto.DataCriacao.ToShortDateString()</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" @onclick="() => Editar(produto.Id)">
+                            Editar
+                        </button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => Deletar(produto.Id, produto.Nome)">
+                            Excluir
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Paginação -->
+    @if (ViewModel.Produtos?.TotalPaginas > 1)
+    {
+        <nav>
+            <ul class="pagination">
+                @for (int i = 1; i <= ViewModel.Produtos.TotalPaginas; i++)
+                {
+                    <li class="page-item @(i == ViewModel.Produtos.PaginaAtual ? "active" : "")">
+                        <button class="page-link" @onclick="() => MudarPagina(i)">@i</button>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+
+<!-- Modal de Confirmação de Deleção -->
+<ConfirmarDelecao IsVisible="@_showDeleteModal" ProdutoNome="@_produtoParaDeletarNome"
+                  ProdutoId="@_produtoParaDeletarId" OnConfirm="ConfirmarDelecao" OnCancel="CancelarDelecao" />
+
+
+@code {
+
+    // Variáveis para controle do modal de deleção
+    private bool _showDeleteModal = false;
+    private Guid _produtoParaDeletarId;
+    private string? _produtoParaDeletarNome;
+    private ListarProdutosQuery Query { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarProdutos();
+    }
+
+    private async Task CarregarProdutos()
+    {
+        await ViewModel.CarregarProdutosAsync(Query);
+    }
+
+    private async Task Recarregar()
+    {
+        await CarregarProdutos();
+    }
+
+    private async Task MudarPagina(int pagina)
+    {
+        Query.Pagina = pagina;
+        await CarregarProdutos();
+    }
+
+    private void Editar(Guid id)
+    {
+        Console.WriteLine($"✏️ Editando produto {id}");
+        Navigation.NavigateTo($"/produtos/editar/{id}");
+    }
+
+    private async Task Deletar(Guid id, string nome)
+    {
+        AbrirConfirmacaoDelecao(id, nome);
+    }
+
+    private void AbrirConfirmacaoDelecao(Guid id, string nome)
+    {
+        _produtoParaDeletarId = id;
+        _produtoParaDeletarNome = nome;
+        _showDeleteModal = true;
+        StateHasChanged();
+    }
+    private async Task ConfirmarDelecao()
+    {
+        _showDeleteModal = false;
+        await ViewModel.DeletarProdutoAsync(_produtoParaDeletarId);
+        StateHasChanged();
+    }
+    private void CancelarDelecao()
+    {
+        _showDeleteModal = false;
+        _produtoParaDeletarId = Guid.Empty;
+        _produtoParaDeletarNome = null;
+        StateHasChanged();
+    }
+}

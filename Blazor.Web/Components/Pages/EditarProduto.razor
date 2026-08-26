@@ -1,0 +1,153 @@
+﻿@page "/produtos/editar/{id:guid}"
+@rendermode InteractiveServer
+
+@inject ProdutoViewModel ViewModel
+@inject NavigationManager Navigation
+@inject IMediator Mediator
+
+<PageTitle>Editar Produto</PageTitle>
+
+<h3>Editar Produto</h3>
+
+@if (ViewModel.IsLoading)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p>Carregando dados do produto...</p>
+    </div>
+}
+else if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+{
+    <div class="alert alert-danger">@ViewModel.ErrorMessage</div>
+    <button class="btn btn-secondary" @onclick="Voltar">Voltar</button>
+}
+else if (Command != null)
+{
+    <EditForm Model="@Command" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome *</label>
+            <InputText id="nome" class="form-control" @bind-Value="Command.Nome" />
+        </div>
+
+        <div class="mb-3">
+            <label for="preco" class="form-label">Preço *</label>
+            <InputNumber id="preco" class="form-control" @bind-Value="Command.Preco" />
+        </div>
+
+        <div class="mb-3">
+            <label for="quantidade" class="form-label">Quantidade em Estoque</label>
+            <InputNumber id="quantidade" class="form-control" @bind-Value="Command.QuantidadeEstoque" />
+        </div>
+
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria *</label>
+            <InputText id="categoria" class="form-control" @bind-Value="Command.Categoria" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" disabled="@ViewModel.IsLoading">
+            @if (ViewModel.IsLoading)
+            {
+                <span>💾 Salvando...</span>
+            }
+            else
+            {
+                <span>💾 Salvar Alterações</span>
+            }
+        </button>
+
+        <button type="button" class="btn btn-secondary" @onclick="Voltar">❌ Cancelar</button>
+    </EditForm>
+}
+else
+{
+    <div class="alert alert-warning">Produto não encontrado</div>
+    <button class="btn btn-secondary" @onclick="Voltar">Voltar</button>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private EditarProdutoCommand? Command { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarProduto();
+    }
+
+    private async Task CarregarProduto()
+    {
+        try
+        {
+            ViewModel.IsLoading = true;
+            ViewModel.ErrorMessage = null;
+
+            // Buscar o produto pelo ID
+            var query = new ObterProdutoPorIdQuery { Id = Id };
+            var produto = await Mediator.Send(query);
+
+            // Mapear para o Command
+            Command = new EditarProdutoCommand
+            {
+                Id = produto.Id,
+                Nome = produto.Nome,
+                Preco = produto.Preco,
+                QuantidadeEstoque = produto.QuantidadeEstoque,
+                Categoria = produto.Categoria
+            };
+        }
+        catch (Exception ex)
+        {
+            ViewModel.ErrorMessage = ex.Message;
+            Command = null;
+        }
+        finally
+        {
+            ViewModel.IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            ViewModel.IsLoading = true;
+            ViewModel.ErrorMessage = null;
+
+            var response = await Mediator.Send(Command!);
+
+            if (response.Sucesso)
+            {
+                // Atualizar a lista no ViewModel (se necessário)
+                await ViewModel.CarregarProdutosAsync(new ListarProdutosQuery());
+
+                // Voltar para a lista
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                ViewModel.ErrorMessage = response.Mensagem;
+            }
+        }
+        catch (Exception ex)
+        {
+            ViewModel.ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            ViewModel.IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Voltar()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

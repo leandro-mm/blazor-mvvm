@@ -1,7 +1,7 @@
 using Blazor.API.Features.Produtos.Commands.CriarProduto;
 using Blazor.API.Features.Produtos.Queries.ListarProduto;
 using Blazor.API.Features.Produtos.Queries.ListarProdutos;
-using Blazor.API.Features.Produtos.viewModels;
+using Blazor.API.Features.Produtos.ViewModels;
 using Blazor.Tests.Fixtures;
 using FluentAssertions;
 using MediatR;

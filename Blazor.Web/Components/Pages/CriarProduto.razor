@@ -1,0 +1,74 @@
+﻿@page "/produtos/criar"
+@rendermode InteractiveServer
+@inject ProdutoViewModel ViewModel
+@inject NavigationManager Navigation
+
+<PageTitle>Criar Produto</PageTitle>
+
+<h3>Novo Produto</h3>
+
+@if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+{
+    <div class="alert alert-danger">@ViewModel.ErrorMessage</div>
+}
+
+<EditForm Model="@Command" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <InputText id="nome" class="form-control" @bind-Value="Command.Nome" />
+    </div>
+
+    <div class="mb-3">
+        <label for="preco" class="form-label">Preço</label>
+        <InputNumber id="preco" class="form-control" @bind-Value="Command.Preco" />
+    </div>
+
+    <div class="mb-3">
+        <label for="quantidade" class="form-label">Quantidade em Estoque</label>
+        <InputNumber id="quantidade" class="form-control" @bind-Value="Command.QuantidadeEstoque" />
+    </div>
+
+    <div class="mb-3">
+        <label for="categoria" class="form-label">Categoria</label>
+        <InputText id="categoria" class="form-control" @bind-Value="Command.Categoria" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@ViewModel.IsLoading">
+        @if (ViewModel.IsLoading)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span> Salvando...</span>
+        }
+        else
+        {
+            <span>Salvar</span>
+        }
+    </button>
+
+    <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+@code {
+    private CriarProdutoCommand Command { get; set; } = new();
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var response = await ViewModel.CriarProdutoAsync(Command);
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            ViewModel.ErrorMessage = ex.Message;
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
