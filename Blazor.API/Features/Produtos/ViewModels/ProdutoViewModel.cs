@@ -9,7 +9,7 @@ namespace Blazor.API.Features.Produtos.viewModels;
 public class ProdutoViewModel
 {
     private readonly IMediator _mediator;
-    public ListarProdutosResponse? Produtos { get; set; }
+    public ListarProdutoResponse? Produtos { get; set; }
     public bool IsLoading { get; set; }
     public string? ErrorMessage { get; set; }
     public string? SuccessMessage { get; set; }
@@ -37,7 +37,28 @@ public class ProdutoViewModel
 
     public async Task<CriarProdutoResponse> CriarProdutoAsync(CriarProdutoCommand command)
     {
-        return await _mediator.Send(command);
+        IsLoading = true;
+        ErrorMessage = null;
+
+        try
+        {
+            var response = await _mediator.Send(command);
+
+            // Recarregar lista de produtos
+            await CarregarProdutosAsync(new ListarProdutosQuery());
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+
     }
     // public async Task<EditarProdutoResponse> EditarProdutoAsync(EditarProdutoCommand command)
     // {

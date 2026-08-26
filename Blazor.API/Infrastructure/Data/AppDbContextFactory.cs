@@ -10,7 +10,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbCont
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
         // Usa SQLite para migrations
-        optionsBuilder.UseSqlite("Data Source=blazormvvm.db");
+        optionsBuilder.UseSqlite("Data Source=blazor.db");
 
         return new ApplicationDbContext(optionsBuilder.Options);
     }

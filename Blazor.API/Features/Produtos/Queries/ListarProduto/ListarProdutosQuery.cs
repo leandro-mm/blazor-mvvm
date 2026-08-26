@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Blazor.API.Features.Produtos.Queries.ListarProdutos;
 
-public class ListarProdutosQuery : IRequest<ListarProdutosResponse>
+public class ListarProdutosQuery : IRequest<ListarProdutoResponse>
 {
     public string? FiltroNome { get; set; }
     public string? Categoria { get; set; }
