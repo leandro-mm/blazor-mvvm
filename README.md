@@ -1,4 +1,4 @@
-# Blazor + MVVM + Feature Slices + MediatR
+# Blazor + MVVM + Feature Slices + CQRS/MediatR
 
 > Projeto idealizado para implementar o padrão MVVM com Blazor. Ele é composto de uma interface de listagem de produtos com funcionalidade para cadastro, edição e exclusão. Utiliza a abordagem de Feature Slices com CQRS/MediatR.
 
