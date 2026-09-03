@@ -1,6 +1,6 @@
 # Blazor + MVVM + Feature Slices + MediatR
 
-Exemplo de projeto com Blazor, MVVM pattern, Feature Slices e MediatR
+> Projeto idealizado para implementar o padrão MVVM com Blazor. Ele é composto de uma interface de listagem de produtos com funcionalidade para cadastro, edição e exclusão. Utiliza a abordagem de Feature Slices com CQRS/MediatR.
 
 ## Estrutura do Projeto
 
@@ -76,13 +76,7 @@ blazor-mvvm-api/
 
 ---
 
-## Comandos para reestruturar o projeto a partir do template default
-
-<img width="401" height="737" alt="image" src="https://github.com/user-attachments/assets/ffd45cb2-f188-4344-b272-bf5d7b16c497" />
-
----
-
-## Pacotes Nuget Necessários
+## Pacotes Necessários
 
 - FluentValidation 12.1.1
 - FluentValidation.DependencyInjectionExtensions 12.1.1
@@ -90,101 +84,10 @@ blazor-mvvm-api/
 - MediatR.Extensions.Microsoft.DependencyInjection 11.1.0
 - Microsoft.EntityFrameworkCore.Sqlite 8.0.30
 - Microsoft.EntityFrameworkCore.Tools 10.0.11
-
+  
 ---
 
-<img width="250" height="245" alt="image" src="https://github.com/user-attachments/assets/6555fd7c-a1a6-4c8b-bdac-082d30eea713" />
-
----
-
-<img width="487" height="352" alt="image" src="https://github.com/user-attachments/assets/174cfe0f-81ef-4d5e-82e7-4de6115a9d06" />
-
----
-
-## Comandos
-
-```bash
-git rm -r --cached <path>
-
-dotnet tool install --global dotnet-ef
-
-dotnet new tool-manifest
-
-dotnet tool install --local dotnet-ef
-
-# Add a migration
-dotnet ef migrations add InitialCreate
-
-# Update the database
-dotnet ef database update
-
-# Recriar o banco com dados seed
-rm blazor.db
-```
-
-## Comandos Docker
-
-```bash
-# Construir imagem
-docker build -t blazor-mvvm-api:latest .
-
-# Construir com Docker Compose
-docker-compose build
-
-# Rodar em background
-docker-compose up -d
-
-# Rodar com logs
-docker-compose up
-
-# Parar
-docker-compose down
-
-Gerenciar Containers
-# Ver containers rodando
-docker ps
-
-# Ver todos containers
-docker ps -a
-
-# Ver logs
-docker logs blazor-mvvm-app
-
-# Entrar no container
-docker exec -it blazor-mvvm-app /bin/bash
-
-# Ver estatísticas
-docker stats blazor-mvvm-app
-
-# Parar container
-docker stop blazor-mvvm-app
-
-# Remover container
-docker rm blazor-mvvm-app
-
-Gerenciar Imagens
-# Listar imagens
-docker images
-
-# Remover imagem
-docker rmi blazor-mvvm-api:latest
-
-# Limpar imagens não utilizadas
-docker image prune -f
-
-Gerenciar Volumes
-# Listar volumes
-docker volume ls
-
-# Remover volume
-docker volume rm blazor-mvvm-api_Data
-
-# Backup do volume
-docker run --rm -v blazor-mvvm-api_Data:/data -v $(pwd):/backup alpine tar czf /backup/data-backup.tar.gz -C /data .
-
-```
-
-## Exemplo de Uso
+## Utilizando o Projeto
 
 ```bash
 Construir e Rodar com Docker Compose
@@ -252,4 +155,83 @@ dotnet watch test
 
 Rodar com detalhamento
 dotnet test --verbosity detailed
+```
+
+## Comandos Úteis
+
+```bash
+git rm -r --cached <path>
+
+dotnet tool install --global dotnet-ef
+
+dotnet new tool-manifest
+
+dotnet tool install --local dotnet-ef
+
+# Add a migration
+dotnet ef migrations add InitialCreate
+
+# Update the database
+dotnet ef database update
+
+# Recriar o banco com dados seed
+rm blazor.db
+
+# Construir imagem
+docker build -t blazor-mvvm-api:latest .
+
+# Construir com Docker Compose
+docker-compose build
+
+# Rodar em background
+docker-compose up -d
+
+# Rodar com logs
+docker-compose up
+
+# Parar
+docker-compose down
+
+Gerenciar Containers
+# Ver containers rodando
+docker ps
+
+# Ver todos containers
+docker ps -a
+
+# Ver logs
+docker logs blazor-mvvm-app
+
+# Entrar no container
+docker exec -it blazor-mvvm-app /bin/bash
+
+# Ver estatísticas
+docker stats blazor-mvvm-app
+
+# Parar container
+docker stop blazor-mvvm-app
+
+# Remover container
+docker rm blazor-mvvm-app
+
+Gerenciar Imagens
+# Listar imagens
+docker images
+
+# Remover imagem
+docker rmi blazor-mvvm-api:latest
+
+# Limpar imagens não utilizadas
+docker image prune -f
+
+Gerenciar Volumes
+# Listar volumes
+docker volume ls
+
+# Remover volume
+docker volume rm blazor-mvvm-api_Data
+
+# Backup do volume
+docker run --rm -v blazor-mvvm-api_Data:/data -v $(pwd):/backup alpine tar czf /backup/data-backup.tar.gz -C /data .
+
 ```
