@@ -2,6 +2,10 @@
 
 > Projeto idealizado para implementar o padrão MVVM com Blazor. Ele é composto de uma interface de listagem de produtos com funcionalidade para cadastro, edição e exclusão. Utiliza a abordagem de Feature Slices com CQRS/MediatR.
 
+## Demonstração
+<img width="2560" height="854" alt="screen-capture-gif" src="https://github.com/user-attachments/assets/4d7b0372-54a5-443e-96a0-49b6d073675a" />
+
+
 ## Estrutura do Projeto
 
 ```text
