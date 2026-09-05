@@ -3,8 +3,8 @@
 > Projeto idealizado para implementar o padrão MVVM com Blazor. Ele é composto de uma interface de listagem de produtos com funcionalidade para cadastro, edição e exclusão. Utiliza a abordagem de Feature Slices com CQRS/MediatR.
 
 ## Demonstração
-<img width="2560" height="854" alt="screen-capture-gif" src="https://github.com/user-attachments/assets/4d7b0372-54a5-443e-96a0-49b6d073675a" />
 
+<img width="2560" height="854" alt="screen-capture-gif" src="https://github.com/user-attachments/assets/4d7b0372-54a5-443e-96a0-49b6d073675a" />
 
 ## Estrutura do Projeto
 
@@ -88,7 +88,7 @@ blazor-mvvm-api/
 - MediatR.Extensions.Microsoft.DependencyInjection 11.1.0
 - Microsoft.EntityFrameworkCore.Sqlite 8.0.30
 - Microsoft.EntityFrameworkCore.Tools 10.0.11
-  
+
 ---
 
 ## Utilizando o Projeto
@@ -160,6 +160,32 @@ dotnet watch test
 Rodar com detalhamento
 dotnet test --verbosity detailed
 ```
+
+---
+
+## Por que MVVM neste projeto?
+
+- **Separação de responsabilidades:** a UI (Views) fica nas páginas e componentes, enquanto a lógica de apresentação e estado fica nos `ViewModels` em [Features/Produtos/ViewModels/ProdutoViewModel.cs](Features/Produtos/ViewModels/ProdutoViewModel.cs). Isso mantém componentes leves e focados apenas em renderização.
+- **Testabilidade:** `ViewModels` e handlers (MediatR) podem ser testados isoladamente; veja os testes em [Blazor.Tests/Unit/Commands/CriarProduto](Blazor.Tests/Unit/Commands/CriarProduto) e fixtures em [Blazor.Tests/Fixtures/TestDataFixture.cs](Blazor.Tests/Fixtures/TestDataFixture.cs).
+- **Fluxo claro de dados com CQRS/MediatR:** comandos e queries em [Features/Produtos/Commands](Features/Produtos/Commands) e [Features/Produtos/Queries](Features/Produtos/Queries) encapsulam operações e reduzem acoplamento entre UI e infraestrutura.
+- **Validação e cross-cutting concerns:** validação centralizada via pipeline usando [Behaviors/ValidationBehavior.cs](Behaviors/ValidationBehavior.cs) e validators em [Features/Produtos/Validators](Features/Produtos/Validators).
+- **Persistência desacoplada:** repositórios na pasta [Infrastructure/Repositories/ProdutoRepository.cs](Infrastructure/Repositories/ProdutoRepository.cs) isolam acesso ao banco, facilitando trocas e testes com implementações fake/in-memory.
+- **Escalabilidade pela organização em Feature Slices:** cada feature (ex: `Produtos`) contém `Models`, `ViewModels`, `Commands`, `Queries`, `Validators` e `Views`, o que facilita adicionar novas features sem mexer em código global.
+
+Como exemplo de fluxo ao criar um produto:
+
+1. A View (ex: [Features/Produtos/Views/CriarProduto.razor](Features/Produtos/Views/CriarProduto.razor)) envia uma ação ou aciona um `ViewModel`.
+2. O `ViewModel` encapsula a entrada e publica um `Command` via MediatR (`Features/Produtos/Commands/CriarProduto`).
+3. O `Command` é tratado por um handler que coordena validação (`Validators`) e acesso ao repositório (`Infrastructure/Repositories/ProdutoRepository.cs`).
+4. Resultado retorna ao `ViewModel` que atualiza a View automaticamente via binding.
+
+Boas práticas ao adicionar features:
+
+- Crie a pasta de feature com `Models`, `ViewModels`, `Commands`/`Queries`, `Validators` e `Views`.
+- Preferir lógica de UI no `ViewModel` e lógica de domínio/infraestrutura em handlers e repositórios.
+- Escreva testes unitários para `ViewModels` e handlers (ex.: `Blazor.Tests/Unit`).
+
+---
 
 ## Comandos Úteis
 
