@@ -27,6 +27,72 @@ Boas práticas ao adicionar features:
 - Escreva testes unitários para `ViewModels` e handlers (ex.: `Blazor.Tests/Unit`).
 
 ---  
+## Ciclo de Vida de Componentes Blazor
+
+Este projeto segue os padrões estabelecidos para o ciclo de vida de componentes no Blazor, essenciais para controlar a inicialização, renderização e descarte de recursos. Compreender esses eventos é crucial para construir aplicações eficientes e reativas.
+
+### Visão Geral dos Eventos de Ciclo de Vida
+
+A tabela abaixo resume os principais métodos que podem ser sobrescritos e seus propósitos:
+
+| Método | Disparo | Propósito Principal |
+| :--- | :--- | :--- |
+| **`SetParametersAsync`** | Quando o componente recebe novos parâmetros (do pai ou rota). | Processar parâmetros manualmente, validar valores ou manipular a atribuição de parâmetros. |
+| **`OnInitialized{Async}`** | Única vez, após a atribuição inicial dos parâmetros. | Inicializar dados ou serviços que não dependem de mudanças futuras de parâmetros. |
+| **`OnParametersSet{Async}`** | Após `OnInitialized` e sempre que os parâmetros mudam. | Carregar dados que são dependentes dos valores atuais dos parâmetros do componente. |
+| **`OnAfterRender{Async}`** | Após a conclusão da renderização do componente. | Realizar operações que exigem o DOM, como chamadas a JavaScript (JSInterop). |
+
+### Fluxo e Boas Práticas
+
+1.  **Ordem de Execução**: O fluxo geral é `SetParametersAsync` -> `OnInitialized{Async}` -> `OnParametersSet{Async}` -> `Renderização` -> `OnAfterRender{Async}`.
+2.  **Tarefas Assíncronas**: Operações de longa duração (ex: chamadas HTTP, consultas a banco de dados) devem ser executadas nos métodos `Async` (`OnInitializedAsync`, `OnParametersSetAsync`). O componente aguardará a conclusão dessas tarefas antes de prosseguir com a renderização.
+3.  **Pré-renderização (Prerendering)**: Durante o pré-renderização no servidor, o `OnAfterRender{Async}` não é chamado e o `OnInitializedAsync` pode executar duas vezes. É crucial tratar este cenário para garantir a estabilidade e evitar duplicidade de operações, utilizando, por exemplo, `PersistentComponentState` para persistir o estado.
+4.  **JavaScript Interop (JSInterop)**: O local correto e seguro para chamar funções JavaScript que interagem com o DOM é dentro do `OnAfterRenderAsync`, especialmente quando o parâmetro `firstRender` é `true`. Isso garante que os elementos HTML estejam disponíveis.
+5.  **Descarte de Recursos (`IDisposable`)**: Componentes que utilizam recursos como `CancellationTokenSource` para tarefas canceláveis ou que se inscrevem em eventos devem implementar a interface `IDisposable` para realizar a limpeza e evitar vazamentos de memória.
+
+[ASP.NET Core Razor component lifecycle](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/lifecycle?view=aspnetcore-10.0)
+
+
+### Exemplo de Implementação
+
+**Componente `SlowComponent.razor`:**
+
+Este componente demonstra o uso de `OnInitializedAsync` para uma tarefa longa, com um indicador de carregamento, e o uso de `[StreamRendering]` para melhorar a experiência do usuário durante o pré-renderização.
+
+```razor
+@page "/slow"
+@attribute [StreamRendering]
+
+<h2>Componente Lento</h2>
+
+@if (Data is null)
+{
+    <div><em>Carregando...</em></div>
+}
+else
+{
+    <div>@Data</div>
+}
+
+@code {
+    [PersistentState]
+    public string? Data { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Usa o ??= para garantir que a tarefa só execute uma vez,
+        // mesmo com o pré-renderização.
+        Data ??= await LoadDataAsync();
+    }
+
+    private async Task<string> LoadDataAsync()
+    {
+        // Simula uma operação assíncrona demorada
+        await Task.Delay(5000);
+        return "Carregado com Sucesso!";
+    }
+}
+---  
 
 ## Demonstração
 
