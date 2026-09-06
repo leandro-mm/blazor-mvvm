@@ -1,0 +1,32 @@
+@page "/slow"
+@attribute [StreamRendering]
+
+<h2>Componente Lento</h2>
+
+@if (Data is null)
+{
+    <div class="alert alert-info"><em>Carregando...</em></div>
+}
+else
+{
+    <div class="alert alert-success">@Data</div>
+}
+
+@code {
+    [PersistentState]
+    public string? Data { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Usa o ??= para garantir que a tarefa só execute uma vez,
+        // mesmo com o pré-renderização.
+        Data ??= await LoadDataAsync();
+    }
+
+    private async Task<string> LoadDataAsync()
+    {
+        // Simula uma operação assíncrona demorada
+        await Task.Delay(5000);
+        return "Carregado com Sucesso!";
+    }
+}
