@@ -1,6 +1,6 @@
-# Blazor + MVVM + Feature Slices + CQRS/MediatR
+# Blazor + MVVM + Feature Slices + MediatR
 
-> Projeto idealizado para implementar o padrão MVVM com Blazor. Ele é composto de uma interface de listagem de produtos com funcionalidade para cadastro, edição e exclusão. Utiliza a abordagem de Feature Slices com CQRS/MediatR.
+> Projeto idealizado para implementar o padrão MVVM com Blazor. Ele é composto de uma interface de listagem de produtos com funcionalidade para cadastro, edição e exclusão. Utiliza a abordagem de Feature Slices com MediatR.
 
 ---  
 
@@ -8,7 +8,7 @@
 
 - **Separação de responsabilidades:** a UI (Views) fica nas páginas e componentes, enquanto a lógica de apresentação e estado fica nos `ViewModels` em [Features/Produtos/ViewModels/ProdutoViewModel.cs](Features/Produtos/ViewModels/ProdutoViewModel.cs). Isso mantém componentes leves e focados apenas em renderização.
 - **Testabilidade:** `ViewModels` e handlers (MediatR) podem ser testados isoladamente; veja os testes em [Blazor.Tests/Unit/Commands/CriarProduto](Blazor.Tests/Unit/Commands/CriarProduto) e fixtures em [Blazor.Tests/Fixtures/TestDataFixture.cs](Blazor.Tests/Fixtures/TestDataFixture.cs).
-- **Fluxo claro de dados com CQRS/MediatR:** comandos e queries em [Features/Produtos/Commands](Features/Produtos/Commands) e [Features/Produtos/Queries](Features/Produtos/Queries) encapsulam operações e reduzem acoplamento entre UI e infraestrutura.
+- **Fluxo claro de dados com MediatR:** comandos e queries em [Features/Produtos/Commands](Features/Produtos/Commands) e [Features/Produtos/Queries](Features/Produtos/Queries) encapsulam operações e reduzem acoplamento entre UI e infraestrutura.
 - **Validação e cross-cutting concerns:** validação centralizada via pipeline usando [Behaviors/ValidationBehavior.cs](Behaviors/ValidationBehavior.cs) e validators em [Features/Produtos/Validators](Features/Produtos/Validators).
 - **Persistência desacoplada:** repositórios na pasta [Infrastructure/Repositories/ProdutoRepository.cs](Infrastructure/Repositories/ProdutoRepository.cs) isolam acesso ao banco, facilitando trocas e testes com implementações fake/in-memory.
 - **Escalabilidade pela organização em Feature Slices:** cada feature (ex: `Produtos`) contém `Models`, `ViewModels`, `Commands`, `Queries`, `Validators` e `Views`, o que facilita adicionar novas features sem mexer em código global.
